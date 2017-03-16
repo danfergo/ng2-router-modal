@@ -57,20 +57,24 @@ export class RmService {
                                 ).then(
                                     (x: any) => {
                                         if (!x || !x.$$__NO__GO__ || !(x.$$__NO__GO__ == true)) {
+                                            delete rmService.modalRefs [state.name];
                                             stateService.go('^')
                                         }
                                     },
                                     (x: any) => {
+                                        delete rmService.modalRefs [state.name];
                                         stateService.go('^')
                                     }
                                 );
                             },
                             onExit: function (trans: Transition, state: State) {
-
                                 let injector = trans.injector();
                                 let rmService: any = injector.get(RmService);
-                                rmService.modalRefs [state.name].dismiss({$$__NO__GO__: true});
-                                delete rmService.modalRefs [state.name];
+
+                                if (!!rmService.modalRefs [state.name]) {
+                                    rmService.modalRefs [state.name].dismiss({$$__NO__GO__: true});
+                                    delete rmService.modalRefs [state.name];
+                                }
                             }
                         });
                         // StateService.propertyIsEnumerable()
