@@ -1,6 +1,6 @@
 {
   "name": "ng2-router-modal",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Angular2 module that integrates ng-bootstrap modal with ui-router Edit",
   "repository": {
     "type": "git",
