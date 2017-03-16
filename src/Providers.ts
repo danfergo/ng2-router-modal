@@ -1,8 +1,8 @@
 import {Provider, Type, Injector} from "@angular/core";
 import {ResourceModal} from "./Modal";
-import {NgbModal, NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {EventModalComponent} from "../../modals/event-modal/event-modal.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {RmService} from "./RouterModalService";
+
 export class Providers {
     private static providers: Provider[] = [];
 
