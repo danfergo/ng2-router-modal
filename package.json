@@ -1,0 +1,22 @@
+{
+  "name": "ng2-router-modal",
+  "version": "0.0.1",
+  "description": "Angular2 module that integrates ng-bootstrap modal with ui-router Edit",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danfergo/ng2-router-modal.git"
+  },
+  "keywords": [
+    "angular2",
+    "ng2",
+    "bootstrap",
+    "modal",
+    "router"
+  ],
+  "author": "danfergo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/danfergo/ng2-router-modal/issues"
+  },
+  "homepage": "https://github.com/danfergo/ng2-router-modal#readme"
+}
