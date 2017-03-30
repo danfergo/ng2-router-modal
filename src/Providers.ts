@@ -1,4 +1,4 @@
-import {Provider, Type, Injector} from "@angular/core";
+import {Provider, Type} from "@angular/core";
 import {ResourceModal} from "./Modal";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {RmService} from "./RouterModalService";

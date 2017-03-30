@@ -6,8 +6,8 @@ export function ModalAction(methodOptions?: IModalAction) {
 
     return function (target: ResourceModal, propertyKey: string) {
 
-        (<any>target).data =  methodOptions.data ||  {};
-
+        // (<any>target).data =  methodOptions.data ||  {};
+        //
         (<any>target)[propertyKey] = function (...args: any[]): NgbModalRef {
             return this.open();
         }
