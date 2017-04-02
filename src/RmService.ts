@@ -4,7 +4,8 @@ import {StateRegistry, Transition, State, StateService} from "ui-router-ng2"
 
 @Injectable()
 export class RmService {
-    private subjects: {} = {};
+    private onCloses: {} = {};
+    private onDismisses: {} = {};
     private observables: {} = {};
 
 
@@ -63,9 +64,8 @@ export class RmService {
         }
     }
 
-    public loadModalStates(states: any[]): void {
+    public initModalStates(states: any[]): void {
         for (let state of states) {
-
             if (state.data && state.data.modals) {
                 let modals = state.data.modals;
                 for (let m of modals) {
@@ -86,15 +86,23 @@ export class RmService {
         return this.observables[modalName];
     }
 
+    public onDismiss(modalName: string) {
+
+    }
+
     private init(modalName: string): void {
-        if (!this.subjects.hasOwnProperty(modalName)) {
-            this.subjects[modalName] = new Subject<string>();
+        if (!this.observables.hasOwnProperty(modalName)) {
+            this.onCloses[modalName] = new Subject<string>();
+            this.onDismisses[modalName] = new Subject<string>();
+
+            this.observables[modalName] = this.onCloses[modalName].asObservable();
+            this.observables[modalName].onClose = this.observables[modalName];
+            this.observables[modalName].onDismiss = this.onDismisses[modalName];
         }
-        this.observables[modalName] = this.subjects[modalName].asObservable();
     }
 
     private closed(modalName: string, result: any): void {
-        this.subjects[modalName].next(result);
+        this.onCloses[modalName].next(result);
     }
 
     private dismissed(modalName: string, result: any): void {
