@@ -62,11 +62,7 @@ export class ThingModal extends RmModal {
     create: NgbModalRef;
     
     @ModalAction({
-        params: {
-            id: {
-                type: "int"
-            }
-        }
+        urlParams: '{id:int}'
     })
     update: NgbModalRef;
     
