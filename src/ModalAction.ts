@@ -1,13 +1,21 @@
 import {IModalAction} from "./Interfaces";
-import {ResourceModal} from "./Modal";
+import {RmModal} from "./RmModal";
 import {NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 
 export function ModalAction(methodOptions?: IModalAction) {
 
-    return function (target: ResourceModal, propertyKey: string) {
+    return function (target: RmModal, propertyKey: string) {
 
-        // (<any>target).data =  methodOptions.data ||  {};
-        //
+        // (<any>target).actions = methodOptions.data || {};
+
+        (<any>target).actions =  (<any>target).actions || {};
+
+        console.log(target);
+        console.log('....');
+        console.log((<any>target));
+
+
+        (<any>target).actions[propertyKey] = methodOptions;
         (<any>target)[propertyKey] = function (...args: any[]): NgbModalRef {
             return this.open();
         }

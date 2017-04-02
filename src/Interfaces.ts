@@ -1,11 +1,12 @@
+import {ParamDeclaration} from "ui-router-ng2"
+
 export interface IModalParams {
     component: any,
-    params?: any,
     name: string,
-    actions: string[]
 }
 
 
 export interface IModalAction {
-    data?: any
+    urlParams?: string,
+    params?: any
 }

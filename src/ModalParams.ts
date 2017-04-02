@@ -1,13 +1,12 @@
 import {Type} from "@angular/core";
-import {ResourceModal} from "./Modal";
+import {RmModal} from "./RmModal";
 import {IModalParams} from "./Interfaces";
 import {Providers} from "./Providers";
 
 export function ModalParams(params: IModalParams) {
 
-    return function (target: Type<ResourceModal>) {
+    return function (target: Type<RmModal>) {
         target.prototype.name = params.name;
-        target.prototype.actions = params.actions;
         target.prototype.component = params.component;
         Providers.addProvider(target);
     }

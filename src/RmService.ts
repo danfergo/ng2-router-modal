@@ -21,11 +21,13 @@ export class RmService {
     }
 
 
-    private createState(action: string, name: string, modal: any) {
+    private createState(action: string, name: string, modal: any, options: any) {
         let modalName: string = this.capitalize(modal.name);
+        console.log(name);
         return {
             name: name,
-            url: '/' + action + '-' + modal.name,
+            url: '/' + action + '-' + modal.name + (options.urlParams ? '/' + options.urlParams : ''),
+            params: options.params,
             onEnter: function (trans: Transition, state: State) {
                 let injector = trans.injector();
                 let stateService: any = injector.get(StateService);
@@ -70,10 +72,10 @@ export class RmService {
                 let modals = state.data.modals;
                 for (let m of modals) {
                     let modal: any = this.injector.get(m);
-
-                    for (let action of modal.actions) {
+                    for (let action in modal.actions) {
+                        let options = modal.actions[action];
                         let stateName: string = state.name + '.' + action + this.capitalize(modal.name);
-                        this.stateRegistry.register(this.createState(action, stateName, modal));
+                        this.stateRegistry.register(this.createState(action, stateName, modal, options));
                     }
                 }
             }
@@ -86,7 +88,7 @@ export class RmService {
         return this.observables[modalName];
     }
 
-    public onDismiss(modalName: string) {
+    public onClose(modalName: string) {
 
     }
 

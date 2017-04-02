@@ -2,13 +2,13 @@ import {ModuleWithProviders, NgModule, SkipSelf, Optional} from "@angular/core";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 import {Providers} from "./Providers";
-import {RmService} from "./RouterModalService";
+import {RmService} from "./RmService";
 
 export * from "./Interfaces"
 export * from "./ModalParams"
 export * from "./ModalAction"
-export * from "./Modal"
-export * from "./RouterModalService"
+export * from "./RmModal"
+export * from "./RmService"
 
 @NgModule({
     imports: [

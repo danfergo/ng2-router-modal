@@ -1,8 +1,9 @@
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 
-export class ResourceModal {
+export class RmModal {
 
     component: any;
+    actions: string[];
 
     constructor(private modalService: NgbModal) {
         // injector.get(EventModalComponent);
