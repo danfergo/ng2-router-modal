@@ -6,7 +6,7 @@
 # ng2-router-modal
 Angular2 module that integrates [ng-bootstrap](https://ng-bootstrap.github.io) modal with [ui-router](https://ui-router.github.io/ng2/) state's tree.
 
-**DISCLAIMER!** this module is still under high development, so be aware that it's API may change at any moment; I hope to be stabilized under a few days; Feel free to use it and post issues regarding problems or suggestions. 
+**DISCLAIMER!** this module is still under high development, so be aware that its API may change at any moment; I hope to be stabilized under a few days; Feel free to use it and post issues regarding problems or suggestions. 
 
 ### Features
 * **State's tree integration**: open modal with uiSref; unique URL for page with modal opened; auto close modal backtrack.
