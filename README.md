@@ -22,21 +22,21 @@ Angular2 module that integrates [ng-bootstrap](https://ng-bootstrap.github.io) m
 and add to AppModule and initialize modal states initialization at UIRouter config function,
 
 ```ts
-    @NgModule({
-      imports: [
-        ... 
-        UIRouterModule.forRoot({
+@NgModule({
+  imports: [
+    ... 
+    UIRouterModule.forRoot({
+        ...
+        config: function(router: UIRouter, injector: Injector){
+            let rmService = injector.get(RmService);
+            let states = injector.get(StateService).get();
+            rmService.initModalStates(states);
             ...
-            config: function(router: UIRouter, injector: Injector){
-                let rmService = injector.get(RmService);
-                let states = injector.get(StateService).get();
-                rmService.initModalStates(states);
-                ...
-            }
-        }),
-        ResourceModule.forRoot()
-      ],
-    })
+        }
+    }),
+    ResourceModule.forRoot()
+  ],
+})
 ```
 
 
@@ -72,37 +72,35 @@ export class ThingModal extends RmModal {
 
 **./thing-modal.component.ts** is your regular component containing the ng-bootstrap Modal:
 ```ts
+@Component({
+    selector: 'thing-modal',
+    templateUrl: 'thing-modal.html',
+    ... 
+})
+export class ThingModalComponent implements OnInit{
 
-    @Component({
-        selector: 'thing-modal',
-        templateUrl: 'thing-modal.html',
-        ... 
-    })
-    export class ThingModalComponent implements OnInit{
-    
-        constructor(private activeModal: NgbActiveModal, private rmService: RmService, ...) {
-        }
-        
-        ngOnInit(){
-            console.log(rmService.params.id); 
-        }
-        ... 
+    constructor(private activeModal: NgbActiveModal, private rmService: RmService, ...) {
     }
-
+    
+    ngOnInit(){
+        console.log(rmService.params.id); 
+    }
+    ... 
+}
 ```
 
 add/link the modal to an existing state (**./some-module.states.ts**):
 ```ts
-        name: 'somePage',
-        url: '/somepage',
-        component: SomepageComponent,
-        data: {
-            ...
-            modals: [
-                ThingModal
-            ]
-        }
-        ...
+name: 'somePage',
+url: '/somepage',
+component: SomepageComponent,
+data: {
+    ...
+    modals: [
+        ThingModal
+    ]
+}
+...
 ```
 
 Open your modal at `your-website/somepage/create-thing` to create a new Thing or `your-website/somepage/update-thing/123`
@@ -118,25 +116,25 @@ to update an existing Thing. You can update the modal pragmatically via the stat
 The handler is called every time the modal/action is closed/dismissed. **do not forget** to unsubscribe the observers
 
 ```ts
-    export class SomepageComponent implements OnDestroy {
+export class SomepageComponent implements OnDestroy {
 
-        constructor(private rmService: RmService ... ){
-            this.thingCloseSub = rmService.onClose(['createThing', 'updateThing']).subscribe((thing: any) => {
-                   console.log(thing)
-            });
-            
-            this.thingDismissSub = rmService.onDismiss(['createThing']).subscribe((thing: any) => {
-               console.log('user dismissed modal when creating a thing');
-            });
-            ...        
-        }
+    constructor(private rmService: RmService ... ){
+        this.thingCloseSub = rmService.onClose(['createThing', 'updateThing']).subscribe((thing: any) => {
+               console.log(thing)
+        });
         
-        ngOnDestroy(): void {
-            this.thingCloseSub.unsubscribe();
-            this.thingDismissSub.unsubscribe();
-        }
+        this.thingDismissSub = rmService.onDismiss(['createThing']).subscribe((thing: any) => {
+           console.log('user dismissed modal when creating a thing');
+        });
+        ...        
     }
-    ...
+    
+    ngOnDestroy(): void {
+        this.thingCloseSub.unsubscribe();
+        this.thingDismissSub.unsubscribe();
+    }
+}
+...
 ```
 
 
@@ -146,20 +144,20 @@ Using the `open` method you can use the returned promise or the `onClose`/`onDis
 
 
 ```ts
-    export class NavbarComponent {
+export class NavbarComponent {
 
-        constructor(private rmService: RmService ... ){
-     
-        }
-        
-        openThing(): void {
-            this.rmService.open(ThingModal, 'create', {someparam: 'some value'}).then(
-                    thing => (console.log(thing),
-                    msg => console.log('user dismissed modal with ' + msg )
-            );
-        }
+    constructor(private rmService: RmService ... ){
+ 
     }
-    ...
+    
+    openThing(): void {
+        this.rmService.open(ThingModal, 'create', {someparam: 'some value'}).then(
+                thing => (console.log(thing),
+                msg => console.log('user dismissed modal with ' + msg )
+        );
+    }
+}
+...
 ```
 
 
