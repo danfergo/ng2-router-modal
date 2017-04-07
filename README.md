@@ -16,7 +16,7 @@ Angular2 module that integrates [ng-bootstrap](https://ng-bootstrap.github.io) m
 ### Install
 
 ```
-    npm install ng2-router-modal
+npm install ng2-router-modal
 ```
 
 and add to AppModule and initialize modal states initialization at UIRouter config function,
@@ -106,8 +106,8 @@ data: {
 Open your modal at `your-website/somepage/create-thing` to create a new Thing or `your-website/somepage/update-thing/123`
 to update an existing Thing. You can update the modal pragmatically via the state names (do not forget to pass the parameters).
 ```html 
-   <a uiSref='somePage.createThing'>New Thing</a>
-   <a uiSref='somePage.updateThing' [uiParams]='{id: 123}'>Update Thing 123</a>
+<a uiSref='somePage.createThing'>New Thing</a>
+<a uiSref='somePage.updateThing' [uiParams]='{id: 123}'>Update Thing 123</a>
 ```
 
 
@@ -146,9 +146,7 @@ Using the `open` method you can use the returned promise or the `onClose`/`onDis
 ```ts
 export class NavbarComponent {
 
-    constructor(private rmService: RmService ... ){
- 
-    }
+    constructor(private rmService: RmService ... ){}
     
     openThing(): void {
         this.rmService.open(ThingModal, 'create', {someparam: 'some value'}).then(
