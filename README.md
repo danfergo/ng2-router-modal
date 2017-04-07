@@ -146,7 +146,7 @@ Using the `open` method you can use the returned promise or the `onClose`/`onDis
 
 
 ```ts
-    export class NavbarComponent implements OnDestroy {
+    export class NavbarComponent {
 
         constructor(private rmService: RmService ... ){
      
