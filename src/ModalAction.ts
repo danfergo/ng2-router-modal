@@ -9,12 +9,6 @@ export function ModalAction(methodOptions?: IModalAction) {
         // (<any>target).actions = methodOptions.data || {};
 
         (<any>target).actions =  (<any>target).actions || {};
-
-        console.log(target);
-        console.log('....');
-        console.log((<any>target));
-
-
         (<any>target).actions[propertyKey] = methodOptions;
         (<any>target)[propertyKey] = function (...args: any[]): NgbModalRef {
             return this.open();

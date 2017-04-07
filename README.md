@@ -6,11 +6,12 @@
 # ng2-router-modal
 Angular2 module that integrates [ng-bootstrap](https://ng-bootstrap.github.io) modal with [ui-router](https://ui-router.github.io/ng2/) state's tree.
 
-**DISCLAIMER!** this module is still under high development, so be aware that its API may change at any moment; I hope to be stabilized under a few days; Feel free to use it and post issues regarding problems or suggestions. 
+**DISCLAIMER!** this module is still under high development; If you have suggestions and or problems feel free to post them on issues. 
 
 ### Features
 * **State's tree integration**: open modal with uiSref; unique URL for page with modal opened; auto close modal backtrack.
 * **Async callback**: register callback for onClose/onDismiss at parent state controller.
+* **Open modal with params**: open modal without State Tree / Url integration ; access parameters inside the modal the same way; 
 
 ### Install
 
@@ -77,9 +78,13 @@ export class ThingModal extends RmModal {
         templateUrl: 'thing-modal.html',
         ... 
     })
-    export class ThingModalComponent {
+    export class ThingModalComponent implements OnInit{
     
-        constructor(private activeModal: NgbActiveModal, ...) {
+        constructor(private activeModal: NgbActiveModal, private rmService: RmService, ...) {
+        }
+        
+        ngOnInit(){
+            console.log(rmService.params.id); 
         }
         ... 
     }
@@ -109,4 +114,53 @@ to update an existing Thing. You can update the modal pragmatically via the stat
 
 
 ### Subscribing for onClose/onDismiss callback
+
+The handler is called every time the modal/action is closed/dismissed. **do not forget** to unsubscribe the observers
+
+```ts
+    export class SomepageComponent implements OnDestroy {
+
+        constructor(private rmService: RmService ... ){
+            this.thingCloseSub = rmService.onClose(['createThing', 'updateThing']).subscribe((thing: any) => {
+                   console.log(thing)
+            });
+            
+            this.thingDismissSub = rmService.onDismiss(['createThing']).subscribe((thing: any) => {
+               console.log('user dismissed modal when creating a thing');
+            });
+            ...        
+        }
+        
+        ngOnDestroy(): void {
+            this.thingCloseSub.unsubscribe();
+            this.thingDismissSub.unsubscribe();
+        }
+    }
+    ...
+```
+
+
+### Open modal with params
+
+Using the `open` method you can use the returned promise or the `onClose`/`onDismiss` methods to receive the result.
+
+
+```ts
+    export class NavbarComponent implements OnDestroy {
+
+        constructor(private rmService: RmService ... ){
+     
+        }
+        
+        openThing(): void {
+            this.rmService.open(ThingModal, 'create', {someparam: 'some value'}).then(
+                    thing => (console.log(thing),
+                    msg => console.log('user dismissed modal with ' + msg )
+            );
+        }
+    }
+    ...
+```
+
+
 (in progress)

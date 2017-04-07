@@ -1,15 +1,15 @@
 import {Injectable, Injector} from "@angular/core";
 import {Subject, Observable} from "rxjs";
-import {StateRegistry, Transition, State, StateService} from "ui-router-ng2"
+import {StateRegistry, Transition, State, StateService, StateParams} from "ui-router-ng2"
+import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 
 @Injectable()
 export class RmService {
-    private onCloses: {} = {};
-    private onDismisses: {} = {};
-    private observables: {} = {};
+    private onCloseSubjects: {} = {};
 
 
     private modalRefs: {} = {};
+    private modalParams: any[] = [];
 
 
     private capitalize(str: string): string {
@@ -21,12 +21,39 @@ export class RmService {
     }
 
 
-    private createState(action: string, name: string, modal: any, options: any) {
-        let modalName: string = this.capitalize(modal.name);
-        console.log(name);
-        return {
-            name: name,
-            url: '/' + action + '-' + modal.name + (options.urlParams ? '/' + options.urlParams : ''),
+    public get params(): any {
+        return this.modalParams[this.modalParams.length - 1];
+    }
+
+
+    public open(modalType: any, action: string, params: any = null): Promise<any> {
+        let modal: any = this.injector.get(modalType);
+        let modalName = modal.name;
+
+        let modalRef = modal[action]();
+        this.modalRefs [modalName] = modalRef;
+        this.modalParams.push(params);
+
+        return modalRef.result.then((msg: any) => {
+                this.closed(modalName, msg);
+                delete this.modalRefs [modalName];
+                this.modalParams.pop();
+                return msg;
+            },
+            (msg: any) => {
+                this.dismissed(modalName, msg);
+                delete this.modalRefs [modalName];
+                this.modalParams.pop();
+                return msg;
+            });
+    }
+
+
+    private createState(action: string, modal: any, options: any, parentStateName: string = null) {
+        let modalName: string = action + this.capitalize(modal.name);
+        let stateName: string = (parentStateName ? parentStateName + '.' : '') + modalName;
+        let state: any = {
+            name: stateName,
             params: options.params,
             onEnter: function (trans: Transition, state: State) {
                 let injector = trans.injector();
@@ -34,27 +61,25 @@ export class RmService {
                 let rmService: any = injector.get(RmService);
 
                 let modalRef = modal[action]();
-                rmService.modalRefs [name] = modalRef;
+
+                rmService.modalRefs [stateName] = modalRef;
+                rmService.modalParams.push(stateService.params);
 
                 modalRef.result.then(
                     (msg: any) => {
-                        rmService.closed(action + modalName, msg);
+                        rmService.closed(modalName, msg);
+                        delete rmService.modalRefs [state.name];
+                        rmService.modalParams.pop();
+                        stateService.go('^');
                         return msg;
                     },
                     (msg: any) => {
-                        rmService.dismissed(action + modalName, msg);
+                        rmService.dismissed(modalName, msg);
+                        delete rmService.modalRefs [state.name];
+                        rmService.modalParams.pop();
+                        stateService.go('^');
                         return msg;
-                    }
-                ).then(
-                    (x: any) => {
-                        delete rmService.modalRefs [state.name];
-                        stateService.go('^')
-                    },
-                    (x: any) => {
-                        delete rmService.modalRefs [state.name];
-                        stateService.go('^')
-                    }
-                );
+                    });
             },
             onExit: function (trans: Transition, state: State) {
                 let injector = trans.injector();
@@ -63,48 +88,58 @@ export class RmService {
                     rmService.modalRefs [state.name].dismiss();
                 }
             }
+        };
+
+        if (parentStateName != null) {
+            state.url = '/' + action + '-' + modal.name + (options.urlParams ? '/' + options.urlParams : '');
         }
+
+        return state;
     }
 
     public initModalStates(states: any[]): void {
         for (let state of states) {
-            if (state.data && state.data.modals) {
-                let modals = state.data.modals;
-                for (let m of modals) {
-                    let modal: any = this.injector.get(m);
-                    for (let action in modal.actions) {
-                        let options = modal.actions[action];
-                        let stateName: string = state.name + '.' + action + this.capitalize(modal.name);
-                        this.stateRegistry.register(this.createState(action, stateName, modal, options));
-                    }
-                }
+            if (state.abstract || !state.data || !state.data.modals) continue;
+
+            this.initModalsForState(state.data.modals, state.name);
+        }
+    }
+
+    private initModalsForState(modals: any[], parentStateName: string = null) {
+        for (let m of modals) {
+            let modal: any = this.injector.get(m);
+            for (let action in modal.actions) {
+                let options = modal.actions[action];
+                this.stateRegistry.register(this.createState(action, modal, options, parentStateName));
             }
         }
     }
 
-
-    public get(modalName: string): any {
-        this.init(modalName);
-        return this.observables[modalName];
+    public onClose(names: string | string[]): any {
+        return this.init(names).asObservable();
     }
 
-    public onClose(modalName: string) {
+    private init(names: string | string[]): any {
 
-    }
+        if (!Array.isArray(names)) names = [names];
+        if (names.length === 0) return null;
 
-    private init(modalName: string): void {
-        if (!this.observables.hasOwnProperty(modalName)) {
-            this.onCloses[modalName] = new Subject<string>();
-            this.onDismisses[modalName] = new Subject<string>();
+        if (!this.onCloseSubjects.hasOwnProperty(names[0])) {
+            let subject = new Subject<string>();
 
-            this.observables[modalName] = this.onCloses[modalName].asObservable();
-            this.observables[modalName].onClose = this.observables[modalName];
-            this.observables[modalName].onDismiss = this.onDismisses[modalName];
+            for (let name of names) {
+                this.onCloseSubjects[name] = subject;
+            }
+            return subject;
         }
+        else
+            return this.onCloseSubjects[names[0]];
+
     }
 
     private closed(modalName: string, result: any): void {
-        this.onCloses[modalName].next(result);
+        if (this.onCloseSubjects.hasOwnProperty(modalName))
+            this.onCloseSubjects[modalName].next(result);
     }
 
     private dismissed(modalName: string, result: any): void {
