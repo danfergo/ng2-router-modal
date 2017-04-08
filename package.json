@@ -1,6 +1,6 @@
 {
   "name": "ng2-router-modal",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Angular2 module that integrates ng-bootstrap modal with ui-router state's tree",
   "scripts": {
     "build": "tsc -w"
