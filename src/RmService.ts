@@ -34,17 +34,19 @@ export class RmService {
         this.modalRefs [modalName] = modalRef;
         this.modalParams.push(params);
 
-        return modalRef.result.then((msg: any) => {
+
+        return modalRef.result.then(
+            (msg: any) => {
                 this.closed(modalName, msg);
                 delete this.modalRefs [modalName];
                 this.modalParams.pop();
-                return msg;
+                return new Promise((res, _) => res(msg));
             },
             (msg: any) => {
                 this.dismissed(modalName, msg);
                 delete this.modalRefs [modalName];
                 this.modalParams.pop();
-                return msg;
+                return new Promise((_, rej) => rej(msg));
             });
     }
 
