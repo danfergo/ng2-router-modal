@@ -26,21 +26,21 @@
   "homepage": "https://github.com/danfergo/ng2-router-modal#readme",
   "peerDependencies": {
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.20",
-    "@angular/core": "~2.4.8",
-    "ui-router-ng2": "^1.0.0-beta.4"
+    "@angular/core": "^4.1.0",
+    "@uirouter/angular": "^1.0.0-beta.6"
   },
   "devDependencies": {
-    "@angular/common": "^2.4.9",
-    "@angular/core": "^2.4.9",
-    "@angular/forms": "^2.4.9",
-    "@angular/platform-browser": "^2.4.9",
-    "@angular/router": "^3.4.9",
+    "@angular/common": "^4.1.0",
+    "@angular/core": "^4.1.0",
+    "@angular/forms": "^4.1.0",
+    "@angular/platform-browser": "^4.1.0",
+    "@angular/router": "^4.1.0",
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.21",
+    "@uirouter/angular": "^1.0.0-beta.6",
     "awesome-typescript-loader": "^3.1.2",
     "rxjs": "^5.2.0",
     "ts-loader": "^2.0.2",
     "typescript": "^2.0.3",
-    "ui-router-ng2": "^1.0.0-beta.4",
-    "zone.js": "^0.7.2"
+    "zone.js": "^0.7.8"
   }
 }

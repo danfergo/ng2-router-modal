@@ -17,8 +17,7 @@ export * from "./RmService"
 })
 export class RouterModals {
 
-    constructor(private rmService: RmService, @Optional() @SkipSelf() parentModule: RouterModals) {
-
+    constructor(@Optional() @SkipSelf() parentModule: RouterModals) {
         if (parentModule) {
             throw new Error(
                 'CoreModule is already loaded. Import it in the AppModule only');
@@ -29,7 +28,6 @@ export class RouterModals {
         return {
             ngModule: RouterModals,
             providers: Providers.get()
-
         };
     }
 }

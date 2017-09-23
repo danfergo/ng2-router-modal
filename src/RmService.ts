@@ -1,7 +1,6 @@
 import {Injectable, Injector} from "@angular/core";
 import {Subject, Observable} from "rxjs";
-import {StateRegistry, Transition, State, StateService, StateParams} from "ui-router-ng2"
-import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {UIRouter, StateRegistry, Transition, StateService, StateParams} from "@uirouter/angular"
 
 @Injectable()
 export class RmService {
@@ -11,13 +10,17 @@ export class RmService {
     private modalRefs: {} = {};
     private modalParams: any[] = [];
 
-
     private capitalize(str: string): string {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    constructor(private stateService: StateService, private stateRegistry: StateRegistry, private injector: Injector) {
+    private clean(modalName) {
+        delete this.modalRefs [modalName];
+        this.modalParams.pop();
 
+    }
+
+    constructor(private injector: Injector) {
     }
 
 
@@ -38,15 +41,13 @@ export class RmService {
         return modalRef.result.then(
             (msg: any) => {
                 this.closed(modalName, msg);
-                delete this.modalRefs [modalName];
-                this.modalParams.pop();
-                return new Promise((res, _) => res(msg));
+                this.clean(modalName);
+                return Promise.resolve(msg);
             },
             (msg: any) => {
                 this.dismissed(modalName, msg);
-                delete this.modalRefs [modalName];
-                this.modalParams.pop();
-                return new Promise((_, rej) => rej(msg));
+                this.clean(modalName);
+                return Promise.reject(msg);
             });
     }
 
@@ -57,7 +58,7 @@ export class RmService {
         let state: any = {
             name: stateName,
             params: options.params,
-            onEnter: function (trans: Transition, state: State) {
+            onEnter: function (trans: Transition) {
                 let injector = trans.injector();
                 let stateService: any = injector.get(StateService);
                 let rmService: any = injector.get(RmService);
@@ -70,20 +71,18 @@ export class RmService {
                 modalRef.result.then(
                     (msg: any) => {
                         rmService.closed(modalName, msg);
-                        delete rmService.modalRefs [state.name];
-                        rmService.modalParams.pop();
+                        rmService.clean(modalName);
                         stateService.go('^');
                         return msg;
                     },
                     (msg: any) => {
                         rmService.dismissed(modalName, msg);
-                        delete rmService.modalRefs [state.name];
-                        rmService.modalParams.pop();
+                        rmService.clean(modalName);
                         stateService.go('^');
                         return msg;
                     });
             },
-            onExit: function (trans: Transition, state: State) {
+            onExit: function (trans: Transition) {
                 let injector = trans.injector();
                 let rmService: any = injector.get(RmService);
                 if (!!rmService.modalRefs [state.name]) {
@@ -98,23 +97,29 @@ export class RmService {
 
         return state;
     }
+        // console.log('lol');
 
-    public initModalStates(states: any[]): void {
+    public buildStates(states: any[]): any[] {
+        let newStates = [];
         for (let state of states) {
             if (state.abstract || !state.data || !state.data.modals) continue;
-
-            this.initModalsForState(state.data.modals, state.name);
+            newStates = newStates.concat(this.buildState(state.data.modals, state.name));
         }
+        return newStates;
     }
 
-    private initModalsForState(modals: any[], parentStateName: string = null) {
+    private buildState(modals: any[], parentStateName: string = null) {
+        let states = [];
+
         for (let m of modals) {
             let modal: any = this.injector.get(m);
             for (let action in modal.actions) {
                 let options = modal.actions[action];
-                this.stateRegistry.register(this.createState(action, modal, options, parentStateName));
+                if (options.params) continue;
+                states.push(this.createState(action, modal, options, parentStateName));
             }
         }
+        return states;
     }
 
     public onClose(names: string | string[]): any {
@@ -145,7 +150,6 @@ export class RmService {
     }
 
     private dismissed(modalName: string, result: any): void {
-
     }
 
 }
